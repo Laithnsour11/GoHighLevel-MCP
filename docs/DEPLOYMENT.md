@@ -101,9 +101,9 @@ curl -X POST http://localhost:8000/execute-tool \
 
 Vercel provides the best experience for deploying the GoHighLevel MCP Server with automatic HTTPS, global CDN, and zero configuration.
 
-#### One-Click Deploy
+#### One-Click Deployment
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mastanley13/GoHighLevel-MCP)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mastanley13/GoHighLevel-MCP&env=GHL_API_KEY,GHL_LOCATION_ID,NODE_ENV)
 
 #### Manual Deploy
 
@@ -119,6 +119,50 @@ vercel env add GHL_API_KEY
 vercel env add GHL_BASE_URL
 vercel env add GHL_LOCATION_ID
 vercel env add NODE_ENV
+
+# Configure environment variables in Vercel dashboard
+# Add: GHL_API_KEY, GHL_BASE_URL, GHL_LOCATION_ID, NODE_ENV
+```
+
+#### Environment Variable Setup
+
+After deploying to Vercel, you'll need to set up the following environment variables in your Vercel project settings:
+
+1. Go to your project in the Vercel dashboard
+2. Navigate to "Settings" → "Environment Variables"
+3. Add the following variables:
+   - `GHL_API_KEY`: Your GoHighLevel Private Integrations API key
+   - `GHL_LOCATION_ID`: Your GoHighLevel Location ID
+   - `GHL_BASE_URL`: https://services.leadconnectorhq.com (optional)
+   - `NODE_ENV`: production
+
+#### Vercel Deployment URLs
+
+After deployment, you'll have access to the following URLs:
+
+- **Frontend UI**: `https://your-project-name.vercel.app/`
+- **Health Check**: `https://your-project-name.vercel.app/health`
+- **Tools List**: `https://your-project-name.vercel.app/tools`
+- **MCP SSE Endpoint**: `https://your-project-name.vercel.app/sse`
+
+#### Using with Claude Desktop
+
+To use your Vercel-deployed MCP server with Claude Desktop, you'll need to use SSH tunneling since Claude Desktop requires STDIO communication:
+
+```json
+{
+  "mcpServers": {
+    "ghl-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@mastanley13/ghl-mcp-server"],
+      "env": {
+        "GHL_API_KEY": "your_private_integrations_api_key",
+        "GHL_BASE_URL": "https://services.leadconnectorhq.com",
+        "GHL_LOCATION_ID": "your_location_id"
+      }
+    }
+  }
+}
 ```
 
 #### Vercel Configuration
