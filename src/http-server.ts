@@ -42,7 +42,7 @@ dotenv.config();
  * HTTP MCP Server class for web deployment
  */
 class GHLMCPHttpServer {
-  private app: express.Application;
+  private app: express.Express;
   private server: Server;
   private ghlClient: GHLApiClient;
   private contactTools: ContactTools;
@@ -418,7 +418,7 @@ class GHLMCPHttpServer {
     });
 
     // User-specific tool execution endpoint
-    this.app.post('/execute-tool', async (req, res) => {
+    this.app.post('/execute-tool', (async (req, res) => {
       try {
         const { toolName, args } = req.body;
         const credentials = this.extractUserCredentials(req);
@@ -508,7 +508,7 @@ class GHLMCPHttpServer {
           message: error instanceof Error ? error.message : 'Unknown error'
         });
       }
-    });
+    }) as express.RequestHandler);
 
     // SSE endpoint for ChatGPT MCP connection
     const handleSSE = async (req: express.Request, res: express.Response) => {
