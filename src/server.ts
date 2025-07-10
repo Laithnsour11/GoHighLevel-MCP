@@ -31,9 +31,9 @@ import { WorkflowTools } from './tools/workflow-tools.js';
 import { SurveyTools } from './tools/survey-tools.js';
 import { StoreTools } from './tools/store-tools.js';
 import { GHLConfig } from './types/ghl-types';
-import { ProductsTools } from './tools/products-tools.js';
-import { PaymentsTools } from './tools/payments-tools.js';
-import { InvoicesTools } from './tools/invoices-tools.js';
+import { ProductsTools } from './tools/products-tools';
+import { PaymentsTools } from './tools/payments-tools';
+import { InvoicesTools } from './tools/invoices-tools';
 
 // Load environment variables
 dotenv.config();
