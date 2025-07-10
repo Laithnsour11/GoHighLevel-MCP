@@ -548,6 +548,15 @@ class GHLMCPHttpServer {
 
     // Root endpoint with server info
     this.app.get('/', (req, res) => {
+      // Serve the frontend if no API path is requested
+      res.sendFile(path.join(__dirname, '../public/index.html'));
+    });
+
+    // Serve static files
+    this.app.use(express.static(path.join(__dirname, '../public')));
+
+    // API root endpoint
+    this.app.get('/api', (req, res) => {
       res.json({
         name: 'GoHighLevel MCP Server',
         version: '1.0.0',

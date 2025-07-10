@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoHighLevel MCP Server</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .code-block { background: #1a202c; color: #e2e8f0; border-radius: 8px; padding: 1rem; overflow-x: auto; }
+        .step-indicator { background: linear-gradient(45deg, #4f46e5, #7c3aed); }
+        .success-indicator { background: linear-gradient(45deg, #10b981, #059669); }
+        .error-indicator { background: linear-gradient(45deg, #ef4444, #dc2626); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            <i class="fas fa-rocket text-indigo-600 mr-2"></i>
+                            GoHighLevel MCP Server
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showSection('onboarding')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-play-circle mr-1"></i>Get Started
+                    </button>
+                    <button onclick="showSection('tools')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-tools mr-1"></i>Tools
+                    </button>
+                    <button onclick="showSection('docs')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-book mr-1"></i>Documentation
+                    </button>
+                    <button onclick="showSection('testing')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-flask mr-1"></i>Test API
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div id="hero" class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl font-bold mb-6">
+                Transform Claude Desktop with GoHighLevel
+            </h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">
+                Connect Claude Desktop to your GoHighLevel CRM with 269+ powerful tools for contact management, 
+                messaging, blog operations, and complete business automation.
+            </p>
+            <div class="flex justify-center space-x-4">
+                <button onclick="showSection('onboarding')" class="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">
+                    <i class="fas fa-rocket mr-2"></i>Get Started Now
+                </button>
+                <button onclick="showSection('docs')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition duration-300">
+                    <i class="fas fa-book mr-2"></i>View Documentation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Onboarding Section -->
+        <div id="onboarding" class="section hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Quick Setup Guide</h2>
+                <p class="text-xl text-gray-600">Get your GoHighLevel MCP server running in 5 minutes</p>
+            </div>
+
+            <!-- Setup Steps -->
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                    <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-4">1</div>
+                    <h3 class="text-xl font-semibold mb-3">Get GoHighLevel Credentials</h3>
+                    <p class="text-gray-600 mb-4">Obtain your Private Integrations API key and Location ID from GoHighLevel.</p>
+                    <button onclick="showCredentialsGuide()" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                        <i class="fas fa-external-link-alt mr-1"></i>Setup Guide
+                    </button>
+                </div>
+
+                <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                    <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-4">2</div>
+                    <h3 class="text-xl font-semibold mb-3">Test Your Connection</h3>
+                    <p class="text-gray-600 mb-4">Verify your credentials work with our built-in testing tool.</p>
+                    <button onclick="showSection('testing')" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                        <i class="fas fa-flask mr-1"></i>Test Now
+                    </button>
+                </div>
+
+                <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                    <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-4">3</div>
+                    <h3 class="text-xl font-semibold mb-3">Configure Claude Desktop</h3>
+                    <p class="text-gray-600 mb-4">Add the MCP server to your Claude Desktop configuration.</p>
+                    <button onclick="showClaudeConfig()" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                        <i class="fas fa-cog mr-1"></i>Configure
+                    </button>
+                </div>
+            </div>
+
+            <!-- Credentials Guide Modal Content (Hidden by default) -->
+            <div id="credentials-guide" class="hidden bg-white p-8 rounded-lg shadow-xl">
+                <h3 class="text-2xl font-bold mb-6">
+                    <i class="fas fa-key text-indigo-600 mr-2"></i>
+                    GoHighLevel API Setup
+                </h3>
+                
+                <div class="space-y-6">
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    <strong>Important:</strong> You need a <strong>Private Integrations API key</strong>, not a regular API key!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-semibold">Step-by-Step Instructions:</h4>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-3 mt-1">1</span>
+                                <p>Login to your GoHighLevel account</p>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-3 mt-1">2</span>
+                                <p>Navigate to <strong>Settings → Integrations → Private Integrations</strong></p>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-3 mt-1">3</span>
+                                <div>
+                                    <p>Create New Private Integration with these scopes:</p>
+                                    <ul class="mt-2 ml-4 space-y-1 text-sm text-gray-600">
+                                        <li>• contacts.readonly & contacts.write</li>
+                                        <li>• conversations.readonly & conversations.write</li>
+                                        <li>• opportunities.readonly & opportunities.write</li>
+                                        <li>• calendars.readonly & calendars.write</li>
+                                        <li>• locations.readonly & locations.write</li>
+                                        <li>• workflows.readonly</li>
+                                        <li>• And any other scopes you need</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-3 mt-1">4</span>
+                                <p>Copy the generated <strong>Private API Key</strong></p>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-3 mt-1">5</span>
+                                <p>Get your <strong>Location ID</strong> from Settings → Company → Locations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Claude Configuration Guide -->
+            <div id="claude-config" class="hidden bg-white p-8 rounded-lg shadow-xl">
+                <h3 class="text-2xl font-bold mb-6">
+                    <i class="fas fa-cog text-indigo-600 mr-2"></i>
+                    Claude Desktop Configuration
+                </h3>
+                
+                <div class="space-y-6">
+                    <p class="text-gray-600">Add this configuration to your Claude Desktop settings:</p>
+                    
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-semibold">Configuration File Location:</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h5 class="font-medium mb-2"><i class="fab fa-apple mr-1"></i> macOS:</h5>
+                                <code class="text-sm">~/Library/Application Support/Claude/claude_desktop_config.json</code>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h5 class="font-medium mb-2"><i class="fab fa-windows mr-1"></i> Windows:</h5>
+                                <code class="text-sm">%APPDATA%\Claude\claude_desktop_config.json</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold mb-3">Configuration Content:</h4>
+                        <div class="code-block">
+<pre>{
+  "mcpServers": {
+    "ghl-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@yourusername/ghl-mcp-server"],
+      "env": {
+        "GHL_API_KEY": "your_private_integrations_api_key",
+        "GHL_BASE_URL": "https://services.leadconnectorhq.com",
+        "GHL_LOCATION_ID": "your_location_id"
+      }
+    }
+  }
+}</pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-blue-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    Replace <code>your_private_integrations_api_key</code> and <code>your_location_id</code> with your actual credentials.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Section -->
+        <div id="tools" class="section hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Available Tools</h2>
+                <p class="text-xl text-gray-600">269+ powerful tools across 19+ categories</p>
+            </div>
+
+            <div id="tools-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Tools will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Documentation Section -->
+        <div id="docs" class="section hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Complete Documentation</h2>
+                <p class="text-xl text-gray-600">Everything you need to know about the GoHighLevel MCP Server</p>
+            </div>
+
+            <!-- Documentation Navigation -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <button onclick="showDocSection('overview')" class="doc-nav-btn bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                        <i class="fas fa-home mr-1"></i>Overview
+                    </button>
+                    <button onclick="showDocSection('api-reference')" class="doc-nav-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                        <i class="fas fa-code mr-1"></i>API Reference
+                    </button>
+                    <button onclick="showDocSection('authentication')" class="doc-nav-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                        <i class="fas fa-shield-alt mr-1"></i>Authentication
+                    </button>
+                    <button onclick="showDocSection('examples')" class="doc-nav-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                        <i class="fas fa-lightbulb mr-1"></i>Examples
+                    </button>
+                    <button onclick="showDocSection('deployment')" class="doc-nav-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                        <i class="fas fa-cloud mr-1"></i>Deployment
+                    </button>
+                    <button onclick="showDocSection('troubleshooting')" class="doc-nav-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                        <i class="fas fa-wrench mr-1"></i>Troubleshooting
+                    </button>
+                </div>
+            </div>
+
+            <!-- Documentation Content -->
+            <div id="doc-content" class="bg-white rounded-lg shadow-lg p-8">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Testing Section -->
+        <div id="testing" class="section hidden">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Test Your API Connection</h2>
+                <p class="text-xl text-gray-600">Verify your GoHighLevel credentials and test tools</p>
+            </div>
+
+            <!-- Credentials Input -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <h3 class="text-xl font-semibold mb-6">
+                    <i class="fas fa-key text-indigo-600 mr-2"></i>
+                    Enter Your Credentials
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Private Integrations API Key</label>
+                        <input type="password" id="api-key" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter your Private Integrations API key">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location ID</label>
+                        <input type="text" id="location-id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter your Location ID">
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button onclick="testConnection()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
+                        <i class="fas fa-plug mr-2"></i>Test Connection
+                    </button>
+                </div>
+                
+                <div id="connection-result" class="mt-4 hidden"></div>
+            </div>
+
+            <!-- Tool Testing -->
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h3 class="text-xl font-semibold mb-6">
+                    <i class="fas fa-tools text-indigo-600 mr-2"></i>
+                    Test Tools
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Tool</label>
+                        <select id="tool-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">Select a tool to test...</option>
+                            <option value="search_contacts">Search Contacts</option>
+                            <option value="get_blog_sites">Get Blog Sites</option>
+                            <option value="search_conversations">Search Conversations</option>
+                            <option value="get_pipelines">Get Pipelines</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tool Arguments (JSON)</label>
+                        <textarea id="tool-args" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="3" placeholder='{"query": "John Doe", "limit": 5}'></textarea>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button onclick="testTool()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300">
+                        <i class="fas fa-play mr-2"></i>Execute Tool
+                    </button>
+                </div>
+                
+                <div id="tool-result" class="mt-4 hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">GoHighLevel MCP Server</h3>
+                    <p class="text-gray-400">Transform Claude Desktop with powerful GoHighLevel integration.</p>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" onclick="showSection('onboarding')" class="hover:text-white">Get Started</a></li>
+                        <li><a href="#" onclick="showSection('docs')" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" onclick="showSection('tools')" class="hover:text-white">Tools</a></li>
+                        <li><a href="#" onclick="showSection('testing')" class="hover:text-white">Test API</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="https://github.com/mastanley13/GoHighLevel-MCP" class="hover:text-white">GitHub Repository</a></li>
+                        <li><a href="https://highlevel.stoplight.io/" class="hover:text-white">GoHighLevel API Docs</a></li>
+                        <li><a href="https://modelcontextprotocol.io/" class="hover:text-white">MCP Protocol</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Report Issues</a></li>
+                        <li><a href="#" class="hover:text-white">Feature Requests</a></li>
+                        <li><a href="#" class="hover:text-white">Community</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 GoHighLevel MCP Server. Made with ❤️ for the GoHighLevel community.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
