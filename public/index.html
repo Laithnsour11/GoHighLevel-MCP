@@ -61,9 +61,12 @@
                 <button onclick="showSection('onboarding')" class="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">
                     <i class="fas fa-rocket mr-2"></i>Get Started Now
                 </button>
-                <button onclick="showSection('docs')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition duration-300">
-                    <i class="fas fa-book mr-2"></i>View Documentation
-                </button>
+                <a href="https://vercel.com/new/clone?repository-url=https://github.com/mastanley13/GoHighLevel-MCP&env=GHL_API_KEY,GHL_LOCATION_ID,NODE_ENV" target="_blank" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition duration-300">
+                    <i class="fas fa-cloud mr-2"></i>Deploy to Vercel
+                </a>
+                <a href="https://app.netlify.com/start/deploy?repository=https://github.com/mastanley13/GoHighLevel-MCP" target="_blank" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition duration-300">
+                    <i class="fas fa-cloud-upload-alt mr-2"></i>Deploy to Netlify
+                </a>
             </div>
         </div>
     </div>
@@ -91,11 +94,11 @@
 
                 <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
                     <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg mb-4">2</div>
-                    <h3 class="text-xl font-semibold mb-3">Test Your Connection</h3>
-                    <p class="text-gray-600 mb-4">Verify your credentials work with our built-in testing tool.</p>
-                    <button onclick="showSection('testing')" class="text-indigo-600 hover:text-indigo-800 font-medium">
-                        <i class="fas fa-flask mr-1"></i>Test Now
-                    </button>
+                    <h3 class="text-xl font-semibold mb-3">Deploy to Vercel</h3>
+                    <p class="text-gray-600 mb-4">Deploy your own instance with one click to Vercel.</p>
+                    <a href="https://vercel.com/new/clone?repository-url=https://github.com/mastanley13/GoHighLevel-MCP&env=GHL_API_KEY,GHL_LOCATION_ID,NODE_ENV" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                        <i class="fas fa-cloud mr-1"></i>Deploy Now
+                    </a>
                 </div>
 
                 <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
@@ -183,7 +186,7 @@
                 <div class="space-y-6">
                     <p class="text-gray-600">Add this configuration to your Claude Desktop settings:</p>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         <h4 class="text-lg font-semibold">Configuration File Location:</h4>
                         <div class="grid md:grid-cols-2 gap-4">
                             <div class="bg-gray-50 p-4 rounded-lg">
@@ -193,6 +196,19 @@
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <h5 class="font-medium mb-2"><i class="fab fa-windows mr-1"></i> Windows:</h5>
                                 <code class="text-sm">%APPDATA%\Claude\claude_desktop_config.json</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 border-l-4 border-indigo-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-indigo-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-indigo-700">
+                                    <strong>Note:</strong> For Vercel deployments, you'll need to use the NPM package approach below since Claude Desktop requires STDIO communication.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -310,6 +326,9 @@
                     <button onclick="testConnection()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
                         <i class="fas fa-plug mr-2"></i>Test Connection
                     </button>
+                    <a href="https://vercel.com/new/clone?repository-url=https://github.com/mastanley13/GoHighLevel-MCP&env=GHL_API_KEY,GHL_LOCATION_ID,NODE_ENV" target="_blank" class="ml-4 bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition duration-300">
+                        <i class="fas fa-cloud mr-2"></i>Deploy to Vercel
+                    </a>
                 </div>
                 
                 <div id="connection-result" class="mt-4 hidden"></div>
