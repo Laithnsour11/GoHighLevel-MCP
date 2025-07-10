@@ -136,22 +136,24 @@ class GHLMCPHttpServer {
   /**
    * Initialize GoHighLevel API client with configuration
    */
-  private initializeGHLClient(): GHLApiClient {
+  private initializeGHLClient(customConfig?: { apiKey?: string; locationId?: string }): GHLApiClient {
     // Load configuration from environment
     const config: GHLConfig = {
-      accessToken: process.env.GHL_API_KEY || '',
+      accessToken: customConfig?.apiKey || process.env.GHL_API_KEY || '',
       baseUrl: process.env.GHL_BASE_URL || 'https://services.leadconnectorhq.com',
       version: '2021-07-28',
-      locationId: process.env.GHL_LOCATION_ID || ''
+      locationId: customConfig?.locationId || process.env.GHL_LOCATION_ID || ''
     };
 
-    // Validate required configuration
-    if (!config.accessToken) {
-      throw new Error('GHL_API_KEY environment variable is required');
-    }
+    // Only validate if no custom config provided (for backwards compatibility)
+    if (!customConfig) {
+      if (!config.accessToken) {
+        throw new Error('GHL_API_KEY environment variable is required');
+      }
 
-    if (!config.locationId) {
-      throw new Error('GHL_LOCATION_ID environment variable is required');
+      if (!config.locationId) {
+        throw new Error('GHL_LOCATION_ID environment variable is required');
+      }
     }
 
     console.log('[GHL MCP HTTP] Initializing GHL API client...');
@@ -160,6 +162,35 @@ class GHLMCPHttpServer {
     console.log(`[GHL MCP HTTP] Location ID: ${config.locationId}`);
 
     return new GHLApiClient(config);
+  }
+
+  /**
+   * Create GHL client for specific user credentials
+   */
+  private createUserGHLClient(apiKey: string, locationId: string): GHLApiClient {
+    if (!apiKey || !locationId) {
+      throw new Error('Both apiKey and locationId are required for user-specific operations');
+    }
+
+    return this.initializeGHLClient({ apiKey, locationId });
+  }
+
+  /**
+   * Extract user credentials from request
+   */
+  private extractUserCredentials(req: express.Request): { apiKey?: string; locationId?: string } {
+    // Try headers first (preferred for security)
+    const headerApiKey = req.headers['x-ghl-api-key'] as string;
+    const headerLocationId = req.headers['x-ghl-location-id'] as string;
+
+    // Fallback to query parameters
+    const queryApiKey = req.query.apiKey as string;
+    const queryLocationId = req.query.locationId as string;
+
+    return {
+      apiKey: headerApiKey || queryApiKey,
+      locationId: headerLocationId || queryLocationId
+    };
   }
 
   /**
@@ -230,6 +261,9 @@ class GHLMCPHttpServer {
       console.log(`[GHL MCP HTTP] Executing tool: ${name}`);
 
       try {
+        // For multi-user support, we need to get credentials from the request context
+        // Since MCP doesn't provide request context, we'll use the default client
+        // Multi-user support is primarily for HTTP endpoints
         let result: any;
 
         // Route to appropriate tool handler
@@ -298,12 +332,15 @@ class GHLMCPHttpServer {
   private setupRoutes(): void {
     // Health check endpoint
     this.app.get('/health', (req, res) => {
+      const credentials = this.extractUserCredentials(req);
       res.json({ 
         status: 'healthy',
         server: 'ghl-mcp-server',
         version: '1.0.0',
         timestamp: new Date().toISOString(),
-        tools: this.getToolsCount()
+        tools: this.getToolsCount(),
+        multiUser: true,
+        hasUserCredentials: !!(credentials.apiKey && credentials.locationId)
       });
     });
 
@@ -323,30 +360,153 @@ class GHLMCPHttpServer {
     // Tools listing endpoint
     this.app.get('/tools', async (req, res) => {
       try {
-        const contactTools = this.contactTools.getToolDefinitions();
-        const conversationTools = this.conversationTools.getToolDefinitions();
-        const blogTools = this.blogTools.getToolDefinitions();
-        const opportunityTools = this.opportunityTools.getToolDefinitions();
-        const calendarTools = this.calendarTools.getToolDefinitions();
-        const emailTools = this.emailTools.getToolDefinitions();
-        const locationTools = this.locationTools.getToolDefinitions();
-        const emailISVTools = this.emailISVTools.getToolDefinitions();
-        const socialMediaTools = this.socialMediaTools.getTools();
-        const mediaTools = this.mediaTools.getToolDefinitions();
-        const objectTools = this.objectTools.getToolDefinitions();
-        const associationTools = this.associationTools.getTools();
-        const customFieldV2Tools = this.customFieldV2Tools.getTools();
-        const workflowTools = this.workflowTools.getTools();
-        const surveyTools = this.surveyTools.getTools();
-        const storeTools = this.storeTools.getTools();
-        const productsTools = this.productsTools.getTools();
+        const credentials = this.extractUserCredentials(req);
+        
+        // Create user-specific tools if credentials provided
+        let toolsInstance = this;
+        if (credentials.apiKey && credentials.locationId) {
+          // For tools endpoint, we can create a temporary instance
+          // In practice, you might want to cache these per user
+          const userClient = this.createUserGHLClient(credentials.apiKey, credentials.locationId);
+          toolsInstance = {
+            contactTools: new ContactTools(userClient),
+            conversationTools: new ConversationTools(userClient),
+            blogTools: new BlogTools(userClient),
+            opportunityTools: new OpportunityTools(userClient),
+            calendarTools: new CalendarTools(userClient),
+            emailTools: new EmailTools(userClient),
+            locationTools: new LocationTools(userClient),
+            emailISVTools: new EmailISVTools(userClient),
+            socialMediaTools: new SocialMediaTools(userClient),
+            mediaTools: new MediaTools(userClient),
+            objectTools: new ObjectTools(userClient),
+            associationTools: new AssociationTools(userClient),
+            customFieldV2Tools: new CustomFieldV2Tools(userClient),
+            workflowTools: new WorkflowTools(userClient),
+            surveyTools: new SurveyTools(userClient),
+            storeTools: new StoreTools(userClient),
+            productsTools: new ProductsTools(userClient)
+          } as any;
+        }
+        
+        const contactTools = toolsInstance.contactTools.getToolDefinitions();
+        const conversationTools = toolsInstance.conversationTools.getToolDefinitions();
+        const blogTools = toolsInstance.blogTools.getToolDefinitions();
+        const opportunityTools = toolsInstance.opportunityTools.getToolDefinitions();
+        const calendarTools = toolsInstance.calendarTools.getToolDefinitions();
+        const emailTools = toolsInstance.emailTools.getToolDefinitions();
+        const locationTools = toolsInstance.locationTools.getToolDefinitions();
+        const emailISVTools = toolsInstance.emailISVTools.getToolDefinitions();
+        const socialMediaTools = toolsInstance.socialMediaTools.getTools();
+        const mediaTools = toolsInstance.mediaTools.getToolDefinitions();
+        const objectTools = toolsInstance.objectTools.getToolDefinitions();
+        const associationTools = toolsInstance.associationTools.getTools();
+        const customFieldV2Tools = toolsInstance.customFieldV2Tools.getTools();
+        const workflowTools = toolsInstance.workflowTools.getTools();
+        const surveyTools = toolsInstance.surveyTools.getTools();
+        const storeTools = toolsInstance.storeTools.getTools();
+        const productsTools = toolsInstance.productsTools.getTools();
         
         res.json({
           tools: [...contactTools, ...conversationTools, ...blogTools, ...opportunityTools, ...calendarTools, ...emailTools, ...locationTools, ...emailISVTools, ...socialMediaTools, ...mediaTools, ...objectTools, ...associationTools, ...customFieldV2Tools, ...workflowTools, ...surveyTools, ...storeTools, ...productsTools],
-          count: contactTools.length + conversationTools.length + blogTools.length + opportunityTools.length + calendarTools.length + emailTools.length + locationTools.length + emailISVTools.length + socialMediaTools.length + mediaTools.length + objectTools.length + associationTools.length + customFieldV2Tools.length + workflowTools.length + surveyTools.length + storeTools.length + productsTools.length
+          count: contactTools.length + conversationTools.length + blogTools.length + opportunityTools.length + calendarTools.length + emailTools.length + locationTools.length + emailISVTools.length + socialMediaTools.length + mediaTools.length + objectTools.length + associationTools.length + customFieldV2Tools.length + workflowTools.length + surveyTools.length + storeTools.length + productsTools.length,
+          userSpecific: !!(credentials.apiKey && credentials.locationId)
         });
       } catch (error) {
         res.status(500).json({ error: 'Failed to list tools' });
+      }
+    });
+
+    // User-specific tool execution endpoint
+    this.app.post('/execute-tool', async (req, res) => {
+      try {
+        const { toolName, args } = req.body;
+        const credentials = this.extractUserCredentials(req);
+        
+        if (!credentials.apiKey || !credentials.locationId) {
+          return res.status(400).json({ 
+            error: 'Missing credentials. Provide x-ghl-api-key and x-ghl-location-id headers or apiKey and locationId query parameters.' 
+          });
+        }
+        
+        if (!toolName) {
+          return res.status(400).json({ error: 'toolName is required' });
+        }
+        
+        // Create user-specific client and tools
+        const userClient = this.createUserGHLClient(credentials.apiKey, credentials.locationId);
+        
+        let result: any;
+        
+        // Route to appropriate tool handler with user-specific client
+        if (this.isContactTool(toolName)) {
+          const userContactTools = new ContactTools(userClient);
+          result = await userContactTools.executeTool(toolName, args || {});
+        } else if (this.isConversationTool(toolName)) {
+          const userConversationTools = new ConversationTools(userClient);
+          result = await userConversationTools.executeTool(toolName, args || {});
+        } else if (this.isBlogTool(toolName)) {
+          const userBlogTools = new BlogTools(userClient);
+          result = await userBlogTools.executeTool(toolName, args || {});
+        } else if (this.isOpportunityTool(toolName)) {
+          const userOpportunityTools = new OpportunityTools(userClient);
+          result = await userOpportunityTools.executeTool(toolName, args || {});
+        } else if (this.isCalendarTool(toolName)) {
+          const userCalendarTools = new CalendarTools(userClient);
+          result = await userCalendarTools.executeTool(toolName, args || {});
+        } else if (this.isEmailTool(toolName)) {
+          const userEmailTools = new EmailTools(userClient);
+          result = await userEmailTools.executeTool(toolName, args || {});
+        } else if (this.isLocationTool(toolName)) {
+          const userLocationTools = new LocationTools(userClient);
+          result = await userLocationTools.executeTool(toolName, args || {});
+        } else if (this.isEmailISVTool(toolName)) {
+          const userEmailISVTools = new EmailISVTools(userClient);
+          result = await userEmailISVTools.executeTool(toolName, args || {});
+        } else if (this.isSocialMediaTool(toolName)) {
+          const userSocialMediaTools = new SocialMediaTools(userClient);
+          result = await userSocialMediaTools.executeTool(toolName, args || {});
+        } else if (this.isMediaTool(toolName)) {
+          const userMediaTools = new MediaTools(userClient);
+          result = await userMediaTools.executeTool(toolName, args || {});
+        } else if (this.isObjectTool(toolName)) {
+          const userObjectTools = new ObjectTools(userClient);
+          result = await userObjectTools.executeTool(toolName, args || {});
+        } else if (this.isAssociationTool(toolName)) {
+          const userAssociationTools = new AssociationTools(userClient);
+          result = await userAssociationTools.executeAssociationTool(toolName, args || {});
+        } else if (this.isCustomFieldV2Tool(toolName)) {
+          const userCustomFieldV2Tools = new CustomFieldV2Tools(userClient);
+          result = await userCustomFieldV2Tools.executeCustomFieldV2Tool(toolName, args || {});
+        } else if (this.isWorkflowTool(toolName)) {
+          const userWorkflowTools = new WorkflowTools(userClient);
+          result = await userWorkflowTools.executeWorkflowTool(toolName, args || {});
+        } else if (this.isSurveyTool(toolName)) {
+          const userSurveyTools = new SurveyTools(userClient);
+          result = await userSurveyTools.executeSurveyTool(toolName, args || {});
+        } else if (this.isStoreTool(toolName)) {
+          const userStoreTools = new StoreTools(userClient);
+          result = await userStoreTools.executeStoreTool(toolName, args || {});
+        } else if (this.isProductsTool(toolName)) {
+          const userProductsTools = new ProductsTools(userClient);
+          result = await userProductsTools.executeProductsTool(toolName, args || {});
+        } else {
+          return res.status(400).json({ error: `Unknown tool: ${toolName}` });
+        }
+        
+        res.json({
+          success: true,
+          result,
+          toolName,
+          executedAt: new Date().toISOString()
+        });
+        
+      } catch (error) {
+        console.error('Error executing user tool:', error);
+        res.status(500).json({ 
+          error: 'Tool execution failed',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
       }
     });
 
@@ -392,14 +552,26 @@ class GHLMCPHttpServer {
         name: 'GoHighLevel MCP Server',
         version: '1.0.0',
         status: 'running',
+        multiUser: true,
         endpoints: {
           health: '/health',
           capabilities: '/capabilities',
           tools: '/tools',
-          sse: '/sse'
+          sse: '/sse',
+          executeUserTool: '/execute-tool'
         },
         tools: this.getToolsCount(),
-        documentation: 'https://github.com/your-repo/ghl-mcp-server'
+        documentation: 'https://github.com/your-repo/ghl-mcp-server',
+        usage: {
+          headers: {
+            'x-ghl-api-key': 'Your GoHighLevel Private Integrations API Key',
+            'x-ghl-location-id': 'Your GoHighLevel Location ID'
+          },
+          queryParams: {
+            apiKey: 'Your GoHighLevel Private Integrations API Key',
+            locationId: 'Your GoHighLevel Location ID'
+          }
+        }
       });
     });
   }
